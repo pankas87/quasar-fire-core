@@ -25,6 +25,14 @@ func TestGetMessage(t *testing.T) {
 			},
 			Expected: "este es un mensaje",
 		},
+		{
+			Messages: [][]string{
+				{"", "", "", "es", "", "mensaje", "", "un", "amigo"},
+				{"este", "", "un", "mensaje", "", "", "amigo"},
+				{"", "este", "", "un", "mensaje", "de", "", "amigo"},
+			},
+			Expected: "este es un mensaje de un amigo",
+		},
 	}
 
 	for _, tc := range testCases {
