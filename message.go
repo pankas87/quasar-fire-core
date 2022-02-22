@@ -1,4 +1,4 @@
-package main
+package quasar_fire_core
 
 
 func GetMessage(messages ...[]string) string {
