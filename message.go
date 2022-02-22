@@ -1,4 +1,5 @@
-package calculations
+package main
+
 
 func GetMessage(messages ...[]string) string {
 	return "este es un mensaje"
