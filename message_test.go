@@ -61,7 +61,21 @@ func TestMergeMessages(t *testing.T) {
 			},
 			Expected: []string{"este", "es", "un", "mensaje"},
 		},
-		// TODO: Add another test case that shows the merging transition from 3 to 1 slice
+		{
+			Messages: [][]string{
+				{"", "", "", "es", "", "mensaje", "", "un", "amigo"},
+				{"este", "", "un", "mensaje", "", "", "amigo"},
+			},
+			Expected: []string{"este", "es", "un", "mensaje", "", "un", "amigo"},
+		},
+		{
+			Messages: [][]string{
+				{"este", "es", "un", "mensaje", "", "un", "amigo"},
+				{"", "este", "", "un", "mensaje", "de", "", "amigo"},
+
+			},
+			Expected: []string{"este", "es", "un", "mensaje", "de", "un", "amigo"},
+		},
 	}
 
 	for _, tc := range testCases {
