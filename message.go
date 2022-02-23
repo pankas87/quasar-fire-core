@@ -6,7 +6,8 @@ func GetMessage(messages ...[]string) string {
 	// use reduce to iteratively merge the arrays, using the mergeMessages function
 }
 
-func mergeMessages(m1, m2 []string) []string {
+// TODO: Implement different test cases for this function alone
+func MergeMessages(m1, m2 []string) []string {
 	// 1: {"", "", "", "es", "", "mensaje", "", "un", "amigo"},
 	// 2: {"este", "", "un", "mensaje", "", "", "amigo"},
 
@@ -39,4 +40,5 @@ func mergeMessages(m1, m2 []string) []string {
 
 	//	- Inicializar un puntero en "posición 0" para recorrer ambos slices
 	//	- El puntero para el array donde la palabra en común esté más adelante, se calcula en base a un offset que es la diferencia entre la posición mayor y la menor
+	return []string{"este", "es", "un", "mensaje"}
 }

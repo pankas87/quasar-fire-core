@@ -39,3 +39,32 @@ func TestGetMessage(t *testing.T) {
 		fmt.Printf("tc: %+v", tc)
 	}
 }
+
+func TestMergeMessages(t *testing.T) {
+	type TestCase struct{
+		Messages [][]string
+		Expected []string
+	}
+
+	testCases := []TestCase{
+		{
+			Messages: [][]string{
+				{"", "este", "es", "un", "mensaje"},
+				{"este", "", "un", "mensaje"},
+			},
+			Expected: []string{"este", "es", "un", "mensaje"},
+		},
+		{
+			Messages: [][]string{
+				{"este", "es", "un", "mensaje"},
+				{"", "", "es", "", "mensaje"},
+			},
+			Expected: []string{"este", "es", "un", "mensaje"},
+		},
+		// TODO: Add another test case that shows the merging transition from 3 to 1 slice
+	}
+
+	for _, tc := range testCases {
+		fmt.Printf("tc: %+v", tc)
+	}
+}
