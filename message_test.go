@@ -79,6 +79,9 @@ func TestMergeMessages(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		fmt.Printf("tc: %+v", tc)
+		MergeMessages(tc.Messages[0], tc.Messages[1])
+
+		// TODO: Remove this break and test with all of the test cases
+		break
 	}
 }

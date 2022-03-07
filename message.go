@@ -1,5 +1,6 @@
 package quasar_fire_core
 
+import "fmt"
 
 func GetMessage(messages ...[]string) string {
 	return "este es un mensaje"
@@ -29,13 +30,47 @@ func MergeMessages(m1, m2 []string) []string {
 	//			- Llega al final del slice más pequeño
 	//		- 1 sola iteración, complejidad O(n), evitamos los loops anidados
 	//		- El resultado de esto debe ser la posición de la palabra en común en cada slice
-	//		- "mensaje"
+	//		- Palabra: "mensaje"
 	//			- Posición en Slice 1: 5
 	//			- Posición en Slice 2: 3
+	//		- Diff entre ambas ocurrencias de la palabra:
+	//			- (5-3) = 2
 	//
-	// TODO: Initialize the hash tables
-	for i := 0; i <= minLength; i++ {
+	//
+	commonWordsTracker := make(map[string][]int)
 
+	for i := 0; i < minLength; i++ {
+		// Get the words
+		words := []string{
+			m1[i],
+			m2[i],
+		}
+
+		for position, word := range words {
+			// If the word is "", continue
+			if word == "" {
+				continue
+			}
+
+			// If the word is not in the tracker map, add it
+			if _, found := commonWordsTracker[word]; !found {
+				commonWordsTracker[word] = []int{-1,-1}
+			}
+
+
+			// If the value at current #position for the current #word in the tracker map is -1
+			//		- Store the current #i value at #position for #word in the tracker map
+			if val := commonWordsTracker[word][position]; val == -1 {
+				commonWordsTracker[word][position] = i
+			}
+		}
+	}
+
+	// TODO: Iterate the tracker map and use the first matching pair of words found
+	//var matchingWord string
+	for val, key := range commonWordsTracker {
+		fmt.Printf("val: %+v\n", val)
+		fmt.Printf("key: %+v\n", key)
 	}
 
 	//	- Inicializar un puntero en "posición 0" para recorrer ambos slices
