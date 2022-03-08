@@ -4,14 +4,11 @@ import "fmt"
 
 func GetMessage(messages ...[]string) string {
 	return "este es un mensaje"
-	// use reduce to iteratively merge the arrays, using the mergeMessages function
+	// use reduce to iteratively merge the arrays, using the MergeMessages function
 }
 
 // TODO: Implement different test cases for this function alone
 func MergeMessages(m1, m2 []string) []string {
-	// 1: {"", "", "", "es", "", "mensaje", "", "un", "amigo"},
-	// 2: {"este", "", "un", "mensaje", "", "", "amigo"},
-
 	// We get and store the length of the smallest slice, to use it as a stop point of every loop
 	lenghtM1 := len(m1)
 	lenghtM2 := len(m2)
@@ -30,15 +27,43 @@ func MergeMessages(m1, m2 []string) []string {
 	//			- Llega al final del slice más pequeño
 	//		- 1 sola iteración, complejidad O(n), evitamos los loops anidados
 	//		- El resultado de esto debe ser la posición de la palabra en común en cada slice
-	//		- Palabra: "mensaje"
-	//			- Posición en Slice 1: 5
-	//			- Posición en Slice 2: 3
-	//		- Diff entre ambas ocurrencias de la palabra:
-	//			- (5-3) = 2
+	// 			Example 1:
+	//	 			- Values:
+	//					m1: {"", "", "", "es", "", "mensaje", "", "un", "amigo"},
+	// 					m2: {"este", "", "un", "mensaje", "", "", "amigo"},
+	//				- Matching Word:
+	//					- "mensaje"
+	//					- Position at Slice 1: 5
+	//					- Position at Slice 2: 3
+	//					- Diff between both matches positions:
+	//						- (5-3) = 2
+	//						- (3-5) = -2
+	// 			Example 2:
+	//				- Values:
+	// 					m1: {"este", "es", "un", "mensaje", "", "un", "amigo"},
+	// 					m2: {"", "este", "", "un", "mensaje", "de", "", "amigo"},
+	//				- Matching Word:
+	//					- ""
+	//					- Position at Slice 1:
+	//					- Position at Slice 2:
+	//					- Diff between both matches positions:
+	//						- () =
+	//						- () =
+	// 			Example 3:
+	//				- Values:
+	// 					m1: {"", "este", "es", "un", "mensaje", "", "un", "amigo"},
+	// 					m2: {"", "este", "", "", "mensaje", "de", "", ""},
+	//				- Matching Word:
+	//					- ""
+	//					- Position at Slice 1:
+	//					- Position at Slice 2:
+	//					- Diff between both matches positions:
+	//						- () =
+	//						- () =
 	//
 	//
 	commonWordsTracker := make(map[string][]int)
-
+	var commonWordsList []string
 	for i := 0; i < minLength; i++ {
 		// Get the words
 		words := []string{
@@ -55,6 +80,7 @@ func MergeMessages(m1, m2 []string) []string {
 			// If the word is not in the tracker map, add it
 			if _, found := commonWordsTracker[word]; !found {
 				commonWordsTracker[word] = []int{-1,-1}
+				commonWordsList = append(commonWordsList, word)
 			}
 
 
@@ -66,12 +92,23 @@ func MergeMessages(m1, m2 []string) []string {
 		}
 	}
 
-	// TODO: Iterate the tracker map and use the first matching pair of words found
-	//var matchingWord string
-	for val, key := range commonWordsTracker {
-		fmt.Printf("val: %+v\n", val)
-		fmt.Printf("key: %+v\n", key)
+	matchingWord := ""
+	for _, key := range commonWordsList {
+		val := commonWordsTracker[key]
+		if val[0] != -1 && val[1] != -1 {
+			matchingWord = key
+			break
+		}
 	}
+
+	fmt.Printf("Matching Word: %s\n", matchingWord)
+	fmt.Printf("Val: %+v\n", commonWordsTracker[matchingWord])
+
+	// TODO: Add this test case
+	// If a matching pair is not found
+	//	- Return the second slice of strings
+
+	// If a matching pair is found
 
 	//	- Inicializar un puntero en "posición 0" para recorrer ambos slices
 	//	- El puntero para el array donde la palabra en común esté más adelante, se calcula en base a un offset que es la diferencia entre la posición mayor y la menor

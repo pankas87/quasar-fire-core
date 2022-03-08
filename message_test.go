@@ -76,9 +76,19 @@ func TestMergeMessages(t *testing.T) {
 			},
 			Expected: []string{"este", "es", "un", "mensaje", "de", "un", "amigo"},
 		},
+		{
+			Messages: [][]string{
+				{"", "este", "es", "un", "mensaje", "", "un", "amigo"},
+				{"", "este", "", "", "mensaje", "de", "", ""},
+
+			},
+			Expected: []string{"este", "es", "un", "mensaje", "de", "un", "amigo"},
+		},
 	}
 
 	for _, tc := range testCases {
+		fmt.Printf("tc.Messages[0]: %+v\n", tc.Messages[0])
+		fmt.Printf("tc.Messages[1]: %+v\n", tc.Messages[1])
 		MergeMessages(tc.Messages[0], tc.Messages[1])
 
 		// TODO: Remove this break and test with all of the test cases
