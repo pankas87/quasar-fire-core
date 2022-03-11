@@ -103,17 +103,12 @@ func TestMergeMessages(t *testing.T) {
 		},
 	}
 
-	for i, tc := range testCases {
+	for _, tc := range testCases {
 		fmt.Printf("tc.Messages[0]: %+v\n", tc.Messages[0])
 		fmt.Printf("tc.Messages[1]: %+v\n", tc.Messages[1])
 		message, err := MergeMessages(tc.Messages[0], tc.Messages[1])
 
 		assert.Equal(t, tc.ExpectedError, err)
 		assert.Equal(t, tc.ExpectedValue, message)
-
-		// TODO: Remove this break and test with all of the test cases
-		if i > 1 {
-			break
-		}
 	}
 }
