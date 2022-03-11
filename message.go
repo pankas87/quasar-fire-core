@@ -3,12 +3,28 @@ package quasar_fire_core
 import (
 	"errors"
 	"fmt"
+	"strings"
 )
 
 func GetMessage(messages ...[]string) (string, error) {
-	// TODO: Implement this
-	return "este es un mensaje", nil
-	// use reduce to iteratively merge the arrays, using the MergeMessages function
+	// TODO: Test this
+	if len(messages) < 2 {
+		return "", errors.New("You need at least two messages to decode")
+	}
+
+	accMessage := messages[0]
+
+	for i := 1; i < len(messages) - 1; i++ {
+		mergedMessage, err := MergeMessages(accMessage, messages[i])
+
+		if err != nil {
+			return "", err
+		}
+
+		accMessage = mergedMessage
+	}
+
+	return strings.Join(accMessage[:], " "), nil
 }
 
 // Merge:
@@ -146,8 +162,6 @@ func MergeMessages(messages ...[]string) ([]string, error) {
 			fmt.Printf("m1Index: %d, m2Index: %d\n", m1Index, m2Index)
 			fmt.Printf("w1: %s, w2: %s\n\n", w1, w2)
 		}
-
-
 	}
 	return result, nil
 }

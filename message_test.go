@@ -8,37 +8,39 @@ import (
 )
 
 func TestGetMessage(t *testing.T) {
-	type TestCase struct{
-		Messages [][]string
-		Expected string
+	type TestCase struct {
+		Messages        [][]string
+		ExpectedMessage string
+		ExpectedError   error
 	}
 
-	// First: Message brute force solution
-	// Then: Location calculation
-	// Then: API controller
-	// Then GCP Deployment
-	// Then Brute force optimisation
 	testCases := []TestCase{
-		{
-			Messages: [][]string{
-				{"", "este", "es", "un", "mensaje"},
-				{"este", "", "un", "mensaje"},
-				{"", "", "es", "", "mensaje"},
-			},
-			Expected: "este es un mensaje",
-		},
+		// TODO: Fix this test case, in MergeMessages first
 		{
 			Messages: [][]string{
 				{"", "", "", "es", "", "mensaje", "", "un", "amigo"},
 				{"este", "", "un", "mensaje", "", "", "amigo"},
 				{"", "este", "", "un", "mensaje", "de", "", "amigo"},
 			},
-			Expected: "este es un mensaje de un amigo",
+			ExpectedMessage: "este es un mensaje de un amigo",
+			ExpectedError:   nil,
+		},
+		{
+			Messages: [][]string{
+				{"", "este", "es", "un", "mensaje"},
+				{"este", "", "un", "mensaje"},
+				{"", "", "es", "", "mensaje"},
+			},
+			ExpectedMessage: "este es un mensaje",
+			ExpectedError:   nil,
 		},
 	}
 
 	for _, tc := range testCases {
-		fmt.Printf("tc: %+v", tc)
+		result, err := GetMessage(tc.Messages[0], tc.Messages[1], tc.Messages[2])
+
+		assert.Equal(t, tc.ExpectedMessage, result)
+		assert.Equal(t, tc.ExpectedError, err)
 	}
 }
 
@@ -54,7 +56,6 @@ func TestMergeMessages(t *testing.T) {
 			Messages: [][]string{
 				{"", "este", "es", "un", "mensaje", "", "un", "amigo"},
 				{"", "esta", "", "", "mensajero", "de", "", ""},
-
 			},
 			ExpectedValue: nil,
 			ExpectedError: errors.New("A matching pair of words was not found. A matching pair is necessary to calculate the offset"),
@@ -87,7 +88,6 @@ func TestMergeMessages(t *testing.T) {
 			Messages: [][]string{
 				{"este", "es", "un", "mensaje", "", "un", "amigo"},
 				{"", "este", "", "un", "mensaje", "de", "", "amigo"},
-
 			},
 			ExpectedValue: []string{"este", "es", "un", "mensaje", "de", "un", "amigo"},
 			ExpectedError: nil,
@@ -96,7 +96,6 @@ func TestMergeMessages(t *testing.T) {
 			Messages: [][]string{
 				{"", "este", "es", "un", "mensaje", "", "un", "amigo"},
 				{"", "este", "", "", "mensaje", "de", "", ""},
-
 			},
 			ExpectedValue: []string{"este", "es", "un", "mensaje", "de", "un", "amigo"},
 			ExpectedError: nil,
