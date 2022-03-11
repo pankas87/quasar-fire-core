@@ -1,77 +1,33 @@
 package quasar_fire_core
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+)
 
-func GetMessage(messages ...[]string) string {
-	return "este es un mensaje"
+func GetMessage(messages ...[]string) (string, error) {
+	return "este es un mensaje", nil
 	// use reduce to iteratively merge the arrays, using the MergeMessages function
 }
 
 // TODO: Implement different test cases for this function alone
-func MergeMessages(m1, m2 []string) []string {
-	// We get and store the length of the smallest slice, to use it as a stop point of every loop
-	lenghtM1 := len(m1)
-	lenghtM2 := len(m2)
-	var minLength int
-
-	if lenghtM1 <= lenghtM2 {
-		minLength = lenghtM1
-	} else {
-		minLength = lenghtM2
+func MergeMessages(messages ...[]string) ([]string, error) {
+	if len(messages) != 2 {
+		return nil, errors.New("MergeMessages expect exactly ywo messages to merge")
 	}
-	// Mergear:
-	//	- Buscar primera palabra en común en ambos arrays
-	//		- 1 solo loop, almacenar uno o dos hash tables de "seen", así hacemos un solo loop
-	//		- El loop para cuando:
-	//			- Consigue una palabra en común en ambos slices (De acuerdo a la información de la hash table)
-	//			- Llega al final del slice más pequeño
-	//		- 1 sola iteración, complejidad O(n), evitamos los loops anidados
-	//		- El resultado de esto debe ser la posición de la palabra en común en cada slice
-	// 			Example 1:
-	//	 			- Values:
-	//					m1: {"", "", "", "es", "", "mensaje", "", "un", "amigo"},
-	// 					m2: {"este", "", "un", "mensaje", "", "", "amigo"},
-	//				- Matching Word:
-	//					- "mensaje"
-	//					- Position at Slice 1: 5
-	//					- Position at Slice 2: 3
-	//					- Diff between both matches positions:
-	//						- (5-3) = 2
-	//						- (3-5) = -2
-	// 			Example 2:
-	//				- Values:
-	// 					m1: {"este", "es", "un", "mensaje", "", "un", "amigo"},
-	// 					m2: {"", "este", "", "un", "mensaje", "de", "", "amigo"},
-	//				- Matching Word:
-	//					- ""
-	//					- Position at Slice 1:
-	//					- Position at Slice 2:
-	//					- Diff between both matches positions:
-	//						- () =
-	//						- () =
-	// 			Example 3:
-	//				- Values:
-	// 					m1: {"", "este", "es", "un", "mensaje", "", "un", "amigo"},
-	// 					m2: {"", "este", "", "", "mensaje", "de", "", ""},
-	//				- Matching Word:
-	//					- ""
-	//					- Position at Slice 1:
-	//					- Position at Slice 2:
-	//					- Diff between both matches positions:
-	//						- () =
-	//						- () =
-	//
-	//
+
+	// Merge:
+	//	- Search for the first common word in both slices of strings
+	//	- The loop stops when:
+	//		- It find a common word in both slices (By looking at the info stored in the hash map)
+	//		- It gets to the end of the slice
+	//		- 1 iteration per message, O(n+m), we prevent nested loops
 	commonWordsTracker := make(map[string][]int)
 	var commonWordsList []string
-	for i := 0; i < minLength; i++ {
-		// Get the words
-		words := []string{
-			m1[i],
-			m2[i],
-		}
+	matchingWord := ""
 
-		for position, word := range words {
+	for mIndex, message := range messages {
+		for wIndex, word := range message {
 			// If the word is "", continue
 			if word == "" {
 				continue
@@ -83,20 +39,19 @@ func MergeMessages(m1, m2 []string) []string {
 				commonWordsList = append(commonWordsList, word)
 			}
 
+			// If the value at current #mIndex for the current #word in the tracker map is -1
+			//	- Store the current #wIndex value at #mIndex for #word in the tracker map
+			if val := commonWordsTracker[word][mIndex]; val == -1 {
+				commonWordsTracker[word][mIndex] = wIndex
+			}
 
-			// If the value at current #position for the current #word in the tracker map is -1
-			//		- Store the current #i value at #position for #word in the tracker map
-			if val := commonWordsTracker[word][position]; val == -1 {
-				commonWordsTracker[word][position] = i
+			// If the recently added wIndex completes a matching pair at #word, break the loop
+			if commonWordsTracker[word][0] != -1 && commonWordsTracker[word][1] != -1 {
+				matchingWord = word
+				break
 			}
 		}
-	}
-
-	matchingWord := ""
-	for _, key := range commonWordsList {
-		val := commonWordsTracker[key]
-		if val[0] != -1 && val[1] != -1 {
-			matchingWord = key
+		if matchingWord != "" {
 			break
 		}
 	}
@@ -104,13 +59,72 @@ func MergeMessages(m1, m2 []string) []string {
 	fmt.Printf("Matching Word: %s\n", matchingWord)
 	fmt.Printf("Val: %+v\n", commonWordsTracker[matchingWord])
 
-	// TODO: Add this test case
 	// If a matching pair is not found
-	//	- Return the second slice of strings
+	if matchingWord == "" {
+		return nil, errors.New("A matching pair of words was not found. A matching pair is necessary to calculate the offset")
+	} else {
+		//	- With the common word indexes:
+		//		Example 1:
+		//			- Values:
+		//				m1: {"", "", "", "es", "", "mensaje", "", "un", "amigo"},
+		// 				m2: {"este", "", "un", "mensaje", "", "", "amigo"},
+		//
+		//				m1Index: 0
+		//              m2Index: m1Index - offest = 0 - 2
+		//
+		//			- Matching Word:
+		//				- "mensaje"
+		//				- Position at Slice 1: 5
+		//				- Position at Slice 2: 3
+		//				- Diff between both matches positions:
+		//					- (5-3) = 2
+		//					- (3-5) = -2
+		// 		Example 2:
+		//			- Values:
+		// 				m1: {"este", "es", "un", "mensaje", "", "un", "amigo"},
+		// 				m2: {"", "este", "", "un", "mensaje", "de", "", "amigo"},
+		//			- Matching Word:
+		//				- "este"
+		//				- Position at Slice 1: 0
+		//				- Position at Slice 2: 1
+		//				- Diff between both matches positions:
+		//					- (0-1) = -1
+		//					- (1-0) = 0
+		//		Example 3:
+		//			- Values:
+		//				m1: {"", "este", "es", "un", "mensaje", "", "un", "amigo"},
+		//				m2: {"", "este", "", "", "mensaje", "de", "", ""},
+		//			- Matching Word:
+		//				- ""
+		//				- Position at Slice 1: 1
+		//				- Position at Slice 2: 1
+		//				- Diff between both matches positions:
+		//					- (1-1) = 0
+		//					- (1-1) = 0
+		//
+		//
+		//	- Inicializar un puntero en "posición 0" para recorrer ambos slices
+		//	- El puntero para el array donde la palabra en común esté más adelante, se calcula en base a un offset que es la diferencia entre la posición mayor y la menor
+		commonWordPositions := commonWordsTracker[matchingWord]
+		offset := commonWordPositions[0] - commonWordPositions[1]
+		fmt.Printf("Offset: %d\n", offset)
 
-	// If a matching pair is found
+		fmt.Println("Entering the last loop (Hopefully)")
+		for m1Index, w1 := range messages[0] {
+			m2Index := m1Index - offset
+			if m2Index < 0 || m2Index >= len(messages[1]) {
+				continue
+			}
 
-	//	- Inicializar un puntero en "posición 0" para recorrer ambos slices
-	//	- El puntero para el array donde la palabra en común esté más adelante, se calcula en base a un offset que es la diferencia entre la posición mayor y la menor
-	return []string{"este", "es", "un", "mensaje"}
+			w2 := messages[1][m2Index]
+
+
+
+			fmt.Printf("m1Index: %d, m2Index: %d\n", m1Index, m2Index)
+			fmt.Printf("w1: %s, w2: %s\n\n", w1, w2)
+		}
+
+
+	}
+	return []string{"el", "webo", "mio"}, nil
 }
